@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
+import 'package:write_only_twitter/src/theme/colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -39,13 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("home"),
       ),
       body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: dummyTweets.map((tweet) {
-              return TweetContent(tweet: tweet);
-            }).toList()
-            ),
+        child: ListView.separated(itemCount: dummyTweets.length, itemBuilder: (BuildContext context, int index) {
+          return TweetContent(tweet: dummyTweets[index]);
+        }, separatorBuilder: (BuildContext context, int index) => const Divider(color: BorderColor,))
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
