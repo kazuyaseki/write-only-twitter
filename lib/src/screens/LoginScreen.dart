@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:write_only_twitter/src/Widgets/Button.dart';
+import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/screens/HomeScreen.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 

@@ -14,6 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 List<Tweet> dummyTweets = [
+  Tweet(id: "1479791942196404227", text: "立ち食い梅干し食べ比べしてきました", imgUrls: [
+    "https://pbs.twimg.com/media/FIlGzVdagAEmrKd?format=jpg&name=large","https://pbs.twimg.com/media/FIlGzV0aUAEaXKe?format=jpg&name=large"
+  ]),
   Tweet(
       id: "1480103849495261193",
       text:
