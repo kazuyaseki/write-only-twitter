@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
+import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
@@ -39,13 +40,32 @@ List<Tweet> dummyTweets = [
   ])
 ];
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _counter = 0;
+class RedeemConfirmationScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white.withOpacity(
+          0.85), // this is the main reason of transparency at next screen. I am ignoring rest implementation but what i have achieved is you can see.
+    );
+  }
+}
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(const Duration(milliseconds: 200), _renderShowModal);
+  }
+
+  _renderShowModal() {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return CreateTweetModal();
+      },
+    );
   }
 
   @override
@@ -65,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: BorderColor,
                   ))),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _renderShowModal,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),

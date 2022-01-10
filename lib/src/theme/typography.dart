@@ -21,3 +21,10 @@ const body = const TextStyle(
     fontFamily: 'Roboto',
     fontStyle: FontStyle.normal,
     fontSize: 16.0);
+
+const hintText = const TextStyle(
+    color: SubduedTextColor,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'Roboto',
+    fontStyle: FontStyle.normal,
+    fontSize: 18.0);
