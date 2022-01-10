@@ -14,8 +14,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 List<Tweet> dummyTweets = [
+  Tweet(id: "1479733228085063680", text: "カービィカフェわず", imgUrls: [
+    "https://pbs.twimg.com/media/FIkRY-5aMAAkyHt?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FIkRY_oaUAEfyB1?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FIkRY_kaMAAn36z?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FIkRcaJaQAANlzz?format=jpg&name=large"
+  ]),
+  Tweet(id: "1459307956176969730", text: "受付してくれる猫", imgUrls: [
+    "https://pbs.twimg.com/media/FECA1qlacAAm9q2?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FECA1qmaMAAzXuO?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FECA1rwaAAA0FUx?format=jpg&name=large",
+  ]),
   Tweet(id: "1479791942196404227", text: "立ち食い梅干し食べ比べしてきました", imgUrls: [
-    "https://pbs.twimg.com/media/FIlGzVdagAEmrKd?format=jpg&name=large","https://pbs.twimg.com/media/FIlGzV0aUAEaXKe?format=jpg&name=large"
+    "https://pbs.twimg.com/media/FIlGzVdagAEmrKd?format=jpg&name=large",
+    "https://pbs.twimg.com/media/FIlGzV0aUAEaXKe?format=jpg&name=large"
   ]),
   Tweet(
       id: "1480103849495261193",
@@ -43,10 +55,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("home"),
       ),
       body: Center(
-        child: ListView.separated(itemCount: dummyTweets.length, itemBuilder: (BuildContext context, int index) {
-          return TweetContent(tweet: dummyTweets[index]);
-        }, separatorBuilder: (BuildContext context, int index) => const Divider(color: BorderColor,))
-      ),
+          child: ListView.separated(
+              itemCount: dummyTweets.length,
+              itemBuilder: (BuildContext context, int index) {
+                return TweetContent(tweet: dummyTweets[index]);
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(
+                    color: BorderColor,
+                  ))),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
