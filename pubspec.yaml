@@ -16,6 +16,9 @@ dependencies:
   mix: ^0.0.5
   gap: ^2.0.0
   cached_network_image: ^3.2.0
+  photofilters: ^3.0.1
+  image_picker: ^0.8.4+4
+  image: ^3.1.0
 
 dev_dependencies:
   flutter_test:
