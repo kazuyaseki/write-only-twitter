@@ -28,6 +28,7 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
   String fileName = "";
   List<Filter> filters = presetFiltersList;
   XFile? imageFile;
+  String tweetText = "";
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +91,23 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
         ),
       );
 
-      twitterApi.tweetService.update(status: "お手製アプリから記念カキコ");
+      try {
+        await twitterApi.tweetService.update(status: tweetText);
+        const snackBar = SnackBar(
+            content: Text('ツイートを送信しました。'), backgroundColor: PrimaryTwitterBlue);
+
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } catch (e) {
+        print(e);
+        const snackBar = SnackBar(
+          content: Text('ツイートの送信に失敗しました'),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+
+      // twitterApi.mediaService.uploadInit(totalBytes: 1000, mediaType: "");
     }
 
     return Container(
@@ -113,7 +130,7 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
                   icon: const Icon(
                     Icons.chevron_left,
                     color: IconColor,
-                    semanticLabel: 'Add Images',
+                    semanticLabel: 'cancel tweeting',
                   )),
               Button(
                   onPressed: () {
@@ -126,12 +143,18 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  const TextField(
+                  TextField(
                     minLines: 6,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration.collapsed(
+                    autofocus: true,
+                    decoration: const InputDecoration.collapsed(
                         hintText: 'いまどうしてる？', hintStyle: hintText),
+                    onChanged: (text) {
+                      setState(() {
+                        tweetText = text;
+                      });
+                    },
                   ),
                   const Divider(
                     color: BorderColor,
