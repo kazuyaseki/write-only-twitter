@@ -131,6 +131,17 @@ class _HomeScreenState extends State<HomeScreen> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
+      drawer: Drawer(
+          child: Button(
+              onPressed: () {
+                // Delete Twitter Auth Token
+                const storage = FlutterSecureStorage();
+                storage.deleteAll();
+
+                Navigator.pushNamed(context, "/");
+              },
+              text: "ログアウト") // Populate the Drawer in the next step.
+          ),
       backgroundColor: Colors.white,
     );
   }
