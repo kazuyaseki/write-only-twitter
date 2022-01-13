@@ -7,6 +7,7 @@ import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
+import 'package:write_only_twitter/src/theme/typography.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -117,15 +118,20 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("home"),
       ),
       body: Center(
-          child: ListView.separated(
-              itemCount: tweets.length,
-              itemBuilder: (BuildContext context, int index) {
-                return TweetContent(tweet: tweets[index]);
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(
-                    color: BorderColor,
-                  ))),
+          child: tweets.length == 0
+              ? const Text(
+                  "You have not tweeted anything. Let's Tweet!!",
+                  style: title,
+                )
+              : ListView.separated(
+                  itemCount: tweets.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return TweetContent(tweet: tweets[index]);
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(
+                        color: BorderColor,
+                      ))),
       floatingActionButton: FloatingActionButton(
         onPressed: _renderShowModal,
         tooltip: 'Increment',
