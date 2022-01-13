@@ -24,6 +24,7 @@ dependencies:
   url_launcher: ^6.0.18
   dart_twitter_api: ^0.5.4
   webview_flutter: ^3.0.0
+  flutter_secure_storage: ^5.0.2
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mix/mix.dart';
 import 'package:path/path.dart';
 import 'package:gap/gap.dart';
@@ -29,14 +32,11 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
   Widget build(BuildContext context) {
     Future getImage(context) async {
       try {
-        print("hoge");
         final ImagePicker _picker = ImagePicker();
         imageFile = await _picker.pickImage(source: ImageSource.gallery);
-        print(imageFile);
       } on PlatformException catch (e) {
         print(e);
       }
-      print(imageFile?.name);
 
       if (imageFile == null) {
         return;
@@ -68,24 +68,56 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
       }
     }
 
+    sendTweet() async {
+      final key = dotenv.env['TWITTER_API_CONSUMER_KEY']!;
+      final secret = dotenv.env['TWITTER_API_CONSUMER_KEY_SECRET']!;
+
+      const storage = FlutterSecureStorage();
+      String? token = await storage.read(key: "TWITTER_USER_TOKEN");
+      String? tokenSecret =
+          await storage.read(key: "TWITTER_USER_TOKEN_SECRET");
+
+      if (token == null || tokenSecret == null) {
+        return;
+      }
+
+      TwitterApi twitterApi = TwitterApi(
+        client: TwitterClient(
+          consumerKey: key,
+          consumerSecret: secret,
+          token: token,
+          secret: tokenSecret,
+        ),
+      );
+
+      twitterApi.tweetService.update(status: "お手製アプリから記念カキコ");
+    }
+
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       color: const Color(0xFFFFFFFF),
       child: Column(
         children: [
+          const SafeArea(
+            child: SizedBox.shrink(),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(
-                Icons.chevron_left,
-                color: IconColor,
-                size: 40.0,
-                semanticLabel: 'Text to announce in accessibility modes',
-              ),
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  iconSize: 40,
+                  icon: const Icon(
+                    Icons.chevron_left,
+                    color: IconColor,
+                    semanticLabel: 'Add Images',
+                  )),
               Button(
                   onPressed: () {
-                    print("ツイートを送信しました");
+                    sendTweet();
                   },
                   text: "ツイートする")
             ],

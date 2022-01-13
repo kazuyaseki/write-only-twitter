@@ -1,6 +1,7 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth_result.dart';
@@ -34,11 +35,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                   color: WhiteText,
                 )),
-            Button(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/home');
-                },
-                text: "Login with Twitter"),
             ElevatedButton(
               onPressed: () async {
                 TwitterAuth twitterAuth = TwitterAuth(
@@ -54,29 +50,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 switch (result.status) {
                   case TwitterAuthStatus.success:
-                    final key = dotenv.env['TWITTER_API_CONSUMER_KEY']!;
-                    final secret =
-                        dotenv.env['TWITTER_API_CONSUMER_KEY_SECRET']!;
-
-                    TwitterApi twitterApi = TwitterApi(
-                      client: TwitterClient(
-                        consumerKey: key,
-                        consumerSecret: secret,
-                        token: result.session!.token,
-                        secret: result.session!.tokenSecret,
-                      ),
-                    );
-
-                    try {
-                      final homeTimeline =
-                          await twitterApi.timelineService.homeTimeline(
-                        count: 5,
-                      );
-                      // Print the text of each Tweet
-                      homeTimeline.forEach((tweet) => print(tweet.fullText));
-                    } catch (error) {
-                      print(error.toString());
-                    }
+                    const storage = FlutterSecureStorage();
+                    storage.write(
+                        key: "TWITTER_USER_TOKEN",
+                        value: result.session!.token);
+                    storage.write(
+                        key: "TWITTER_USER_TOKEN_SECRET",
+                        value: result.session!.tokenSecret);
+                    storage.write(
+                        key: "TWITTER_USER_ID", value: result.session!.userId);
+                    Navigator.pushNamed(context, '/home');
 
                     break;
                   case TwitterAuthStatus.failure:
@@ -85,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     break;
                 }
               },
-              child: Text('OK'),
+              child: const Text('Login with Twitter'),
             ),
           ],
         ),

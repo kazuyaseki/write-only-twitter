@@ -8,12 +8,13 @@ import 'package:write_only_twitter/src/theme/typography.dart';
 class TweetContent extends StatelessWidget {
   const TweetContent({required this.tweet, Key? key}) : super(key: key);
 
-  final Tweet tweet;
+  final TweetData tweet;
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        color: Colors.white,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +47,7 @@ class TweetContent extends StatelessWidget {
                   ),
                   const Gap(2),
                   Text(
-                    tweet.text,
+                    tweet.text ?? "",
                     textAlign: TextAlign.left,
                     style: body,
                   ),
