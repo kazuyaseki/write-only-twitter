@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:write_only_twitter/src/components/ImageViewer.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
+import 'package:write_only_twitter/src/models/UserProfile.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
 class TweetContent extends StatelessWidget {
-  const TweetContent({required this.tweet, Key? key}) : super(key: key);
+  const TweetContent({required this.tweet, required this.userProfile, Key? key})
+      : super(key: key);
 
+  final UserProfile userProfile;
   final TweetData tweet;
 
   @override
@@ -20,7 +23,8 @@ class TweetContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
-                "https://pbs.twimg.com/profile_images/1475062555903393798/rhOyAqfu_400x400.jpg",
+                userProfile.imgUrl ??
+                    "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
                 width: 42,
                 height: 42,
               ),
@@ -31,16 +35,16 @@ class TweetContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    children: const [
+                    children: [
                       Text(
-                        "seya",
+                        userProfile.name ?? "",
                         style: title,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       Text(
-                        "@sekikazu01",
+                        "@${userProfile.id ?? ""}",
                         style: subtitle,
                       )
                     ],

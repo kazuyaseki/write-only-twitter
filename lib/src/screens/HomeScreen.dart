@@ -6,6 +6,7 @@ import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
+import 'package:write_only_twitter/src/models/UserProfile.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<TweetData> tweets = [];
+  UserProfile? userProfile;
 
   _fetchOwnTweets() async {
     final key = dotenv.env['TWITTER_API_CONSUMER_KEY']!;
@@ -55,6 +57,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final ownTweets = await twitterApi.timelineService
         .userTimeline(userId: userId, count: 10);
+
+    if (ownTweets.isNotEmpty) {
+      Tweet tweet = ownTweets[0];
+      setState(() {
+        userProfile = UserProfile(
+            id: tweet.user!.screenName,
+            name: tweet.user!.name,
+            imgUrl: tweet.user!.profileImageUrlHttps);
+      });
+    }
 
     setState(() {
       tweets = ownTweets
@@ -89,7 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
               : ListView.separated(
                   itemCount: tweets.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return TweetContent(tweet: tweets[index]);
+                    return TweetContent(
+                        tweet: tweets[index],
+                        userProfile: userProfile ??
+                            UserProfile(id: "", name: "", imgUrl: "imgUrl"));
                   },
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(
