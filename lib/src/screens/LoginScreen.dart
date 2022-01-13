@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth_result.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_login_webview.dart';
-import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,6 +18,24 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    sendToHomeIfLoggedIn();
+  }
+
+  sendToHomeIfLoggedIn() async {
+    const storage = FlutterSecureStorage();
+    String? token = await storage.read(key: "TWITTER_USER_TOKEN");
+    String? tokenSecret = await storage.read(key: "TWITTER_USER_TOKEN_SECRET");
+    String? userId = await storage.read(key: "TWITTER_USER_ID");
+
+    if (token != null && tokenSecret != null && userId != null) {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
