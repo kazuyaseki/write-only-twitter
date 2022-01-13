@@ -6,21 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:mix/mix.dart';
 import 'package:path/path.dart';
 import 'package:gap/gap.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:image_picker/image_picker.dart';
-import 'package:photofilters/filters/filters.dart';
-import 'package:photofilters/filters/preset_filters.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
 class CreateTweetModal extends StatefulWidget {
+  const CreateTweetModal({
+    Key? key,
+  }) : super(key: key);
+
   @override
-  _CreateTweetModalState createState() => new _CreateTweetModalState();
+  _CreateTweetModalState createState() => _CreateTweetModalState();
 }
 
 class _CreateTweetModalState extends State<CreateTweetModal> {
@@ -64,7 +65,6 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
         setState(() {
           imageFile = imagefile['image_filtered'];
         });
-        print(imageFile!.path);
       }
     }
 
@@ -123,7 +123,7 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
             ],
           ),
           Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
                   const TextField(
