@@ -6,30 +6,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
+import 'package:write_only_twitter/src/globalStates/TweetsState.dart';
+import 'package:write_only_twitter/src/globalStates/UserProfileState.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/models/UserProfile.dart';
 import 'package:write_only_twitter/src/service/twitter_api_service.dart';
 import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
-
-final TweetsProvider =
-    StateNotifierProvider<Tweets, List<TweetData>>((_) => Tweets());
-
-class Tweets extends StateNotifier<List<TweetData>> {
-  Tweets() : super([]);
-
-  void setNewTweets(List<TweetData> newTweets) => {state = newTweets};
-}
-
-final UserProfileProvider =
-    StateNotifierProvider<_UserProfile, UserProfile?>((_) => _UserProfile());
-
-class _UserProfile extends StateNotifier<UserProfile?> {
-  _UserProfile() : super(null);
-
-  void set(UserProfile userProfile) => {state = userProfile};
-}
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({
@@ -55,7 +39,7 @@ class HomeScreen extends HookConsumerWidget {
           imgUrl: tweet.user!.profileImageUrlHttps));
     }
 
-    ref.read(TweetsProvider.notifier).setNewTweets(ownTweets
+    ref.read(TweetsState.notifier).setNewTweets(ownTweets
         .map((tweetData) => TweetData(
             id: tweetData.idStr, text: tweetData.fullText, imgUrls: []))
         .toList());
@@ -73,7 +57,7 @@ class HomeScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<TweetData> tweets = ref.watch(TweetsProvider);
+    final List<TweetData> tweets = ref.watch(TweetsState);
     final UserProfile? userProfile = ref.watch(UserProfileProvider);
 
     useEffect(() {
