@@ -4,14 +4,14 @@ import 'dart:typed_data';
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart';
 import 'package:gap/gap.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:image_picker/image_picker.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
+import 'package:write_only_twitter/src/service/twitter_api_service.dart';
+import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
@@ -70,29 +70,13 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
     }
 
     sendTweet() async {
-      final key = dotenv.env['TWITTER_API_CONSUMER_KEY']!;
-      final secret = dotenv.env['TWITTER_API_CONSUMER_KEY_SECRET']!;
-
-      const storage = FlutterSecureStorage();
-      String? token = await storage.read(key: "TWITTER_USER_TOKEN");
-      String? tokenSecret =
-          await storage.read(key: "TWITTER_USER_TOKEN_SECRET");
-
-      if (token == null || tokenSecret == null) {
+      TwitterApi? client = await TwitterApiService().getClient();
+      if (client == null) {
         return;
       }
 
-      TwitterApi twitterApi = TwitterApi(
-        client: TwitterClient(
-          consumerKey: key,
-          consumerSecret: secret,
-          token: token,
-          secret: tokenSecret,
-        ),
-      );
-
       try {
-        await twitterApi.tweetService.update(status: tweetText);
+        await client.tweetService.update(status: tweetText);
         const snackBar = SnackBar(
             content: Text('ツイートを送信しました。'), backgroundColor: PrimaryTwitterBlue);
 

@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_auth_result.dart';
 import 'package:write_only_twitter/src/api/auth/twitter_login_webview.dart';
+import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,12 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   sendToHomeIfLoggedIn() async {
-    const storage = FlutterSecureStorage();
-    String? token = await storage.read(key: "TWITTER_USER_TOKEN");
-    String? tokenSecret = await storage.read(key: "TWITTER_USER_TOKEN_SECRET");
-    String? userId = await storage.read(key: "TWITTER_USER_ID");
+    bool isLoggedIn = await TwitterAuthTokenService().isLoggedIn();
 
-    if (token != null && tokenSecret != null && userId != null) {
+    if (isLoggedIn) {
       Navigator.pushNamed(context, '/home');
     }
   }
@@ -67,15 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 switch (result.status) {
                   case TwitterAuthStatus.success:
-                    const storage = FlutterSecureStorage();
-                    storage.write(
-                        key: "TWITTER_USER_TOKEN",
-                        value: result.session!.token);
-                    storage.write(
-                        key: "TWITTER_USER_TOKEN_SECRET",
-                        value: result.session!.tokenSecret);
-                    storage.write(
-                        key: "TWITTER_USER_ID", value: result.session!.userId);
+                    TwitterAuthTokenService().saveOnLogin(result.session!.token,
+                        result.session!.tokenSecret, result.session!.userId);
+
                     Navigator.pushNamed(context, '/home');
 
                     break;

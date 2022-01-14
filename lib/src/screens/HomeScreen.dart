@@ -1,12 +1,13 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/models/UserProfile.dart';
+import 'package:write_only_twitter/src/service/twitter_api_service.dart';
+import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
@@ -33,30 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
   UserProfile? userProfile;
 
   _fetchOwnTweets() async {
-    final key = dotenv.env['TWITTER_API_CONSUMER_KEY']!;
-    final secret = dotenv.env['TWITTER_API_CONSUMER_KEY_SECRET']!;
-
-    const storage = FlutterSecureStorage();
-    String? token = await storage.read(key: "TWITTER_USER_TOKEN");
-    String? tokenSecret = await storage.read(key: "TWITTER_USER_TOKEN_SECRET");
-
-    if (token == null || tokenSecret == null) {
+    TwitterApi? client = await TwitterApiService().getClient();
+    if (client == null) {
       return;
     }
 
-    TwitterApi twitterApi = TwitterApi(
-      client: TwitterClient(
-        consumerKey: key,
-        consumerSecret: secret,
-        token: token,
-        secret: tokenSecret,
-      ),
-    );
+    final userId = await TwitterAuthTokenService().getTwitterUserId();
 
-    final userId = await storage.read(key: "TWITTER_USER_ID");
-
-    final ownTweets = await twitterApi.timelineService
-        .userTimeline(userId: userId, count: 10);
+    final ownTweets =
+        await client.timelineService.userTimeline(userId: userId, count: 10);
 
     if (ownTweets.isNotEmpty) {
       Tweet tweet = ownTweets[0];
