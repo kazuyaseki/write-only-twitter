@@ -1,6 +1,8 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
@@ -11,29 +13,30 @@ import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
-class HomeScreen extends StatefulWidget {
+final TweetsProvider =
+    StateNotifierProvider<Tweets, List<TweetData>>((_) => Tweets());
+
+class Tweets extends StateNotifier<List<TweetData>> {
+  Tweets() : super([]);
+
+  void setNewTweets(List<TweetData> newTweets) => {state = newTweets};
+}
+
+final UserProfileProvider =
+    StateNotifierProvider<_UserProfile, UserProfile?>((_) => _UserProfile());
+
+class _UserProfile extends StateNotifier<UserProfile?> {
+  _UserProfile() : super(null);
+
+  void set(UserProfile userProfile) => {state = userProfile};
+}
+
+class HomeScreen extends HookConsumerWidget {
   const HomeScreen({
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    // Future.delayed(const Duration(milliseconds: 200), _renderShowModal);
-
-    _fetchOwnTweets();
-  }
-
-  List<TweetData> tweets = [];
-  UserProfile? userProfile;
-
-  _fetchOwnTweets() async {
+  _fetchOwnTweets(WidgetRef ref) async {
     TwitterApi? client = await TwitterApiService().getClient();
     if (client == null) {
       return;
@@ -46,23 +49,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (ownTweets.isNotEmpty) {
       Tweet tweet = ownTweets[0];
-      setState(() {
-        userProfile = UserProfile(
-            id: tweet.user!.screenName,
-            name: tweet.user!.name,
-            imgUrl: tweet.user!.profileImageUrlHttps);
-      });
+      ref.read(UserProfileProvider.notifier).set(UserProfile(
+          id: tweet.user!.screenName,
+          name: tweet.user!.name,
+          imgUrl: tweet.user!.profileImageUrlHttps));
     }
 
-    setState(() {
-      tweets = ownTweets
-          .map((tweetData) => TweetData(
-              id: tweetData.idStr, text: tweetData.fullText, imgUrls: []))
-          .toList();
-    });
+    ref.read(TweetsProvider.notifier).setNewTweets(ownTweets
+        .map((tweetData) => TweetData(
+            id: tweetData.idStr, text: tweetData.fullText, imgUrls: []))
+        .toList());
   }
 
-  _renderShowModal() {
+  _renderShowModal(BuildContext context) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -73,7 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<TweetData> tweets = ref.watch(TweetsProvider);
+    final UserProfile? userProfile = ref.watch(UserProfileProvider);
+
+    useEffect(() {
+      _fetchOwnTweets(ref);
+    }, const []);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("home"),
@@ -97,7 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: BorderColor,
                       ))),
       floatingActionButton: FloatingActionButton(
-        onPressed: _renderShowModal,
+        onPressed: () {
+          _renderShowModal(context);
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
