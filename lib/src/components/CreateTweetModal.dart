@@ -4,38 +4,36 @@ import 'dart:typed_data';
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path/path.dart';
 import 'package:gap/gap.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:image_picker/image_picker.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
+import 'package:write_only_twitter/src/globalStates/TweetsState.dart';
+import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/service/twitter_api_service.dart';
-import 'package:write_only_twitter/src/service/twitter_auth_token_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
-class CreateTweetModal extends StatefulWidget {
-  const CreateTweetModal({
+class CreateTweetModal extends HookConsumerWidget {
+  CreateTweetModal({
     Key? key,
   }) : super(key: key);
 
-  @override
-  _CreateTweetModalState createState() => _CreateTweetModalState();
-}
-
-class _CreateTweetModalState extends State<CreateTweetModal> {
-  String fileName = "";
-  List<Filter> filters = presetFiltersList;
-  XFile? imageFile;
-  String tweetText = "";
+  final List<Filter> filters = presetFiltersList;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tweetText = useState("");
+    final imageFile = useState<XFile?>(null);
+
     Future getImage(context) async {
       try {
         final ImagePicker _picker = ImagePicker();
-        imageFile = await _picker.pickImage(source: ImageSource.gallery);
+        imageFile.value = await _picker.pickImage(source: ImageSource.gallery);
       } on PlatformException catch (e) {
         print(e);
       }
@@ -44,8 +42,8 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
         return;
       }
 
-      fileName = basename(imageFile!.path);
-      Uint8List imageBytes = await imageFile!.readAsBytes();
+      String fileName = basename(imageFile.value!.path);
+      Uint8List imageBytes = await imageFile.value!.readAsBytes();
       var image = imageLib.decodeImage(imageBytes);
       image = imageLib.copyResize(image!, width: 600);
 
@@ -63,9 +61,7 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
         ),
       );
       if (imagefile != null && imagefile.containsKey('image_filtered')) {
-        setState(() {
-          imageFile = imagefile['image_filtered'];
-        });
+        imageFile.value = imagefile['image_filtered'];
       }
     }
 
@@ -76,9 +72,13 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
       }
 
       try {
-        await client.tweetService.update(status: tweetText);
+        Tweet postedTweet =
+            await client.tweetService.update(status: tweetText.value);
         const snackBar = SnackBar(
             content: Text('ツイートを送信しました。'), backgroundColor: PrimaryTwitterBlue);
+
+        ref.read(TweetsState.notifier).postTweet(TweetData(
+            id: postedTweet.idStr, text: postedTweet.fullText, imgUrls: []));
 
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -135,9 +135,7 @@ class _CreateTweetModalState extends State<CreateTweetModal> {
                     decoration: const InputDecoration.collapsed(
                         hintText: 'いまどうしてる？', hintStyle: hintText),
                     onChanged: (text) {
-                      setState(() {
-                        tweetText = text;
-                      });
+                      tweetText.value = text;
                     },
                   ),
                   const Divider(
