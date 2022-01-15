@@ -17,6 +17,17 @@ import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/service/twitter_api_service.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
+import 'package:path_provider/path_provider.dart';
+
+Future<File> getImageFileFromAssets(String path) async {
+  final byteData = await rootBundle.load('assets/$path');
+
+  final file = File('${(await getApplicationDocumentsDirectory()).path}/$path');
+  await file.writeAsBytes(byteData.buffer
+      .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+  return file;
+}
 
 class CreateTweetModal extends HookConsumerWidget {
   CreateTweetModal({
@@ -28,12 +39,22 @@ class CreateTweetModal extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tweetText = useState("");
-    final imageFile = useState<XFile?>(null);
+    final imageFiles = useState<List<XFile>>([]);
+
+    useEffect(() {
+      loadBundles() async {
+        final File f = await getImageFileFromAssets('test.png');
+        imageFiles.value = [XFile(f.path)];
+      }
+
+      loadBundles();
+    }, []);
 
     Future getImage(context) async {
+      XFile? imageFile;
       try {
         final ImagePicker _picker = ImagePicker();
-        imageFile.value = await _picker.pickImage(source: ImageSource.gallery);
+        imageFile = await _picker.pickImage(source: ImageSource.gallery);
       } on PlatformException catch (e) {
         print(e);
       }
@@ -42,8 +63,8 @@ class CreateTweetModal extends HookConsumerWidget {
         return;
       }
 
-      String fileName = basename(imageFile.value!.path);
-      Uint8List imageBytes = await imageFile.value!.readAsBytes();
+      String fileName = basename(imageFile.path);
+      Uint8List imageBytes = await imageFile.readAsBytes();
       var image = imageLib.decodeImage(imageBytes);
       image = imageLib.copyResize(image!, width: 600);
 
@@ -61,7 +82,7 @@ class CreateTweetModal extends HookConsumerWidget {
         ),
       );
       if (imagefile != null && imagefile.containsKey('image_filtered')) {
-        imageFile.value = imagefile['image_filtered'];
+        imageFiles.value = [imagefile['image_filtered'], ...imageFiles.value];
       }
     }
 
@@ -154,23 +175,16 @@ class CreateTweetModal extends HookConsumerWidget {
                             color: PrimaryTwitterBlue,
                             semanticLabel: 'Add Images',
                           )),
-                      const Gap(4),
-                      const Icon(
-                        Icons.gif,
-                        color: PrimaryTwitterBlue,
-                        size: 24.0,
-                        semanticLabel:
-                            'Text to announce in accessibility modes',
-                      ),
-                      const Gap(20),
-                      const Icon(
-                        Icons.poll_outlined,
-                        color: PrimaryTwitterBlue,
-                        size: 24.0,
-                        semanticLabel:
-                            'Text to announce in accessibility modes',
-                      )
                     ],
+                  ),
+                  Row(
+                    children: imageFiles.value
+                        .map((file) => Image.file(
+                              File(file.path),
+                              width: 100,
+                              height: 100,
+                            ))
+                        .toList(),
                   )
                 ],
               )),
