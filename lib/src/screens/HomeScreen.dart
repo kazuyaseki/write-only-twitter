@@ -2,6 +2,7 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends HookConsumerWidget {
     Key? key,
   }) : super(key: key);
 
-  _fetchOwnTweets(WidgetRef ref) async {
+  _fetchOwnTweets(WidgetRef ref, VoidCallback onFinished) async {
     TwitterApi? client = await TwitterApiService().getClient();
     if (client == null) {
       return;
@@ -43,6 +44,8 @@ class HomeScreen extends HookConsumerWidget {
         .map((tweetData) => TweetData(
             id: tweetData.idStr, text: tweetData.fullText, imgUrls: []))
         .toList());
+
+    onFinished();
   }
 
   _renderShowModal(BuildContext context) {
@@ -60,9 +63,37 @@ class HomeScreen extends HookConsumerWidget {
     final List<TweetData> tweets = ref.watch(TweetsState);
     final UserProfile? userProfile = ref.watch(UserProfileProvider);
 
+    final loadedTweets = useState(false);
+
     useEffect(() {
-      _fetchOwnTweets(ref);
+      _fetchOwnTweets(ref, () {
+        loadedTweets.value = true;
+      });
     }, const []);
+
+    if (!loadedTweets.value) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text("home"),
+          ),
+          backgroundColor: Colors.white,
+          body: Container(
+            color: Color(0x55000000),
+            child: Center(
+                child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const SpinKitRing(
+                color: PrimaryTwitterBlue,
+                size: 60.0,
+              ),
+            )),
+          ));
+    }
 
     return Scaffold(
       appBar: AppBar(
