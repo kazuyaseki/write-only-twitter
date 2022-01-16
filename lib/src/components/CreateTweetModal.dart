@@ -12,6 +12,7 @@ import 'package:image/image.dart' as imageLib;
 import 'package:image_picker/image_picker.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
+import 'package:write_only_twitter/src/components/ImagesCarousel.dart';
 import 'package:write_only_twitter/src/globalStates/TweetsState.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/service/twitter_api_service.dart';
@@ -164,15 +165,7 @@ class CreateTweetModal extends HookConsumerWidget {
                         const Divider(
                           color: BorderColor,
                         ),
-                        Row(
-                          children: imageFiles.value
-                              .map((file) => Image.file(
-                                    File(file.path),
-                                    width: 100,
-                                    height: 100,
-                                  ))
-                              .toList(),
-                        )
+                        ImagesCarousel(images: imageFiles.value)
                       ],
                     )),
               ],
@@ -181,27 +174,28 @@ class CreateTweetModal extends HookConsumerWidget {
                 bottom: MediaQuery.of(context).viewInsets.bottom,
                 left: 0,
                 right: 0,
-                child: Column(
-                  children: [
-                    const Divider(
-                      color: BorderColor,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              getImage(context);
-                            },
-                            iconSize: 24,
-                            icon: const Icon(
-                              Icons.image_outlined,
-                              color: PrimaryTwitterBlue,
-                              semanticLabel: 'Add Images',
-                            )),
-                      ],
-                    ),
-                  ],
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      const Divider(color: BorderColor, height: 1),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                getImage(context);
+                              },
+                              iconSize: 24,
+                              icon: const Icon(
+                                Icons.image_outlined,
+                                color: PrimaryTwitterBlue,
+                                semanticLabel: 'Add Images',
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
                 )),
           ],
         ));
