@@ -116,80 +116,94 @@ class CreateTweetModal extends HookConsumerWidget {
     }
 
     return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: const Color(0xFFFFFFFF),
-      child: Column(
-        children: [
-          const SafeArea(
-            child: SizedBox.shrink(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  iconSize: 40,
-                  icon: const Icon(
-                    Icons.chevron_left,
-                    color: IconColor,
-                    semanticLabel: 'cancel tweeting',
-                  )),
-              Button(
-                  onPressed: () {
-                    sendTweet();
-                  },
-                  text: "ツイートする")
-            ],
-          ),
-          Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  TextField(
-                    minLines: 6,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    autofocus: true,
-                    decoration: const InputDecoration.collapsed(
-                        hintText: 'いまどうしてる？', hintStyle: hintText),
-                    onChanged: (text) {
-                      tweetText.value = text;
-                    },
-                  ),
-                  const Divider(
-                    color: BorderColor,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            getImage(context);
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        color: const Color(0xFFFFFFFF),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                const SafeArea(
+                  child: SizedBox.shrink(),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        iconSize: 40,
+                        icon: const Icon(
+                          Icons.chevron_left,
+                          color: IconColor,
+                          semanticLabel: 'cancel tweeting',
+                        )),
+                    Button(
+                        onPressed: () {
+                          sendTweet();
+                        },
+                        text: "ツイートする")
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          minLines: 6,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          autofocus: true,
+                          decoration: const InputDecoration.collapsed(
+                              hintText: 'いまどうしてる？', hintStyle: hintText),
+                          onChanged: (text) {
+                            tweetText.value = text;
                           },
-                          iconSize: 24,
-                          icon: const Icon(
-                            Icons.image_outlined,
-                            color: PrimaryTwitterBlue,
-                            semanticLabel: 'Add Images',
-                          )),
-                    ],
-                  ),
-                  Row(
-                    children: imageFiles.value
-                        .map((file) => Image.file(
-                              File(file.path),
-                              width: 100,
-                              height: 100,
-                            ))
-                        .toList(),
-                  )
-                ],
-              )),
-        ],
-      ),
-    );
+                        ),
+                        const Divider(
+                          color: BorderColor,
+                        ),
+                        Row(
+                          children: imageFiles.value
+                              .map((file) => Image.file(
+                                    File(file.path),
+                                    width: 100,
+                                    height: 100,
+                                  ))
+                              .toList(),
+                        )
+                      ],
+                    )),
+              ],
+            ),
+            Positioned(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    const Divider(
+                      color: BorderColor,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              getImage(context);
+                            },
+                            iconSize: 24,
+                            icon: const Icon(
+                              Icons.image_outlined,
+                              color: PrimaryTwitterBlue,
+                              semanticLabel: 'Add Images',
+                            )),
+                      ],
+                    ),
+                  ],
+                )),
+          ],
+        ));
   }
 }
