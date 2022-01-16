@@ -45,7 +45,9 @@ class CreateTweetModal extends HookConsumerWidget {
     useEffect(() {
       loadBundles() async {
         final File f = await getImageFileFromAssets('test.png');
-        imageFiles.value = [XFile(f.path)];
+        final File f2 = await getImageFileFromAssets('test2.png');
+        final File f3 = await getImageFileFromAssets('test3.png');
+        imageFiles.value = [XFile(f2.path), XFile(f.path), XFile(f3.path)];
       }
 
       loadBundles();
@@ -151,6 +153,9 @@ class CreateTweetModal extends HookConsumerWidget {
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
                       children: [
+                        // with multibyte chars 140 chars
+                        // URL is counted as 23 chars
+                        // FIXME: add count logic for chars
                         TextField(
                           minLines: 6,
                           maxLines: null,
@@ -162,10 +167,16 @@ class CreateTweetModal extends HookConsumerWidget {
                             tweetText.value = text;
                           },
                         ),
-                        const Divider(
-                          color: BorderColor,
-                        ),
-                        ImagesCarousel(images: imageFiles.value)
+                        const Gap(12),
+                        ImagesCarousel(
+                          images: imageFiles.value,
+                          onRemoveImage: (int index) {
+                            List<XFile> copy = [...imageFiles.value];
+                            copy.removeAt(index);
+                            print(copy);
+                            imageFiles.value = copy;
+                          },
+                        )
                       ],
                     )),
               ],
