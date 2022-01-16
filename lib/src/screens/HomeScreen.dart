@@ -2,11 +2,11 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:write_only_twitter/src/components/Button.dart';
 import 'package:write_only_twitter/src/components/CreateTweetModal.dart';
 import 'package:write_only_twitter/src/components/TweetContent.dart';
+import 'package:write_only_twitter/src/components/TweetSkeleton.dart';
 import 'package:write_only_twitter/src/globalStates/TweetsState.dart';
 import 'package:write_only_twitter/src/globalStates/UserProfileState.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
@@ -74,30 +74,23 @@ class HomeScreen extends HookConsumerWidget {
     if (!loadedTweets.value) {
       return Scaffold(
           appBar: AppBar(
-            title: Text("home"),
+            title: const Text("home"),
           ),
           backgroundColor: Colors.white,
-          body: Container(
-            color: Color(0x55000000),
-            child: Center(
-                child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const SpinKitRing(
-                color: PrimaryTwitterBlue,
-                size: 60.0,
-              ),
-            )),
-          ));
+          body: ListView.separated(
+              itemCount: 3,
+              itemBuilder: (BuildContext context, int index) {
+                return const TweetSkeleton();
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(
+                    color: BorderColor,
+                  )));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("home"),
+        title: const Text("home"),
       ),
       body: Center(
           child: tweets.isEmpty
