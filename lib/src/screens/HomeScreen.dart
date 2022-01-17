@@ -61,6 +61,23 @@ class HomeScreen extends HookConsumerWidget {
     );
   }
 
+  void onDeleteTweet(
+      BuildContext context, WidgetRef ref, String tweetId) async {
+    TwitterApi? client = await TwitterApiService().getClient();
+    if (client == null) {
+      return;
+    }
+
+    client.tweetService.destroy(id: tweetId);
+    const snackBar = SnackBar(
+        content: Text('ツイートを削除しました。'), backgroundColor: PrimaryTwitterBlue);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    var currentTweets = ref.read(TweetsState.notifier).state;
+    ref.read(TweetsState.notifier).setNewTweets(
+        currentTweets.where((element) => element.id != tweetId).toList());
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<TweetData> tweets = ref.watch(TweetsState);
@@ -105,9 +122,13 @@ class HomeScreen extends HookConsumerWidget {
                   itemCount: tweets.length,
                   itemBuilder: (BuildContext context, int index) {
                     return TweetContent(
-                        tweet: tweets[index],
-                        userProfile: userProfile ??
-                            UserProfile(id: "", name: "", imgUrl: "imgUrl"));
+                      tweet: tweets[index],
+                      userProfile: userProfile ??
+                          UserProfile(id: "", name: "", imgUrl: "imgUrl"),
+                      onDelete: (String tweetId) {
+                        onDeleteTweet(context, ref, tweetId);
+                      },
+                    );
                   },
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(

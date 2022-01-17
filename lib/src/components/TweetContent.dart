@@ -9,11 +9,16 @@ import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
 class TweetContent extends HookConsumerWidget {
-  const TweetContent({required this.tweet, required this.userProfile, Key? key})
+  const TweetContent(
+      {required this.tweet,
+      required this.userProfile,
+      required this.onDelete,
+      Key? key})
       : super(key: key);
 
   final UserProfile userProfile;
   final TweetData tweet;
+  final void Function(String tweetId) onDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,8 +94,7 @@ class TweetContent extends HookConsumerWidget {
                           )),
                       IconButton(
                           onPressed: () {
-                            Share.share(
-                                'check out my website https://example.com');
+                            onDelete(tweet.id!);
                           },
                           iconSize: 20,
                           icon: const Icon(
