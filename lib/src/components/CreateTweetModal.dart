@@ -102,7 +102,10 @@ class CreateTweetModal extends HookConsumerWidget {
             content: Text('ツイートを送信しました。'), backgroundColor: PrimaryTwitterBlue);
 
         ref.read(TweetsState.notifier).postTweet(TweetData(
-            id: postedTweet.idStr, text: postedTweet.fullText, imgUrls: []));
+            id: postedTweet.idStr,
+            text: postedTweet.fullText,
+            url: postedTweet.source,
+            imgUrls: []));
 
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(snackBar);

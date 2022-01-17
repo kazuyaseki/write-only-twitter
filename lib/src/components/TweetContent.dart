@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:write_only_twitter/src/components/ImageViewer.dart';
 import 'package:write_only_twitter/src/models/Tweet.dart';
 import 'package:write_only_twitter/src/models/UserProfile.dart';
 import 'package:write_only_twitter/src/theme/colors.dart';
 import 'package:write_only_twitter/src/theme/typography.dart';
 
-class TweetContent extends StatelessWidget {
+class TweetContent extends HookConsumerWidget {
   const TweetContent({required this.tweet, required this.userProfile, Key? key})
       : super(key: key);
 
@@ -14,7 +16,7 @@ class TweetContent extends StatelessWidget {
   final TweetData tweet;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         color: Colors.white,
@@ -62,28 +64,40 @@ class TweetContent extends StatelessWidget {
                       : const SizedBox.shrink(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(
-                        Icons.mode_comment_outlined,
-                        color: IconColor,
-                        size: 20.0,
-                        semanticLabel:
-                            'Text to announce in accessibility modes',
-                      ),
-                      Icon(
-                        Icons.share,
-                        color: IconColor,
-                        size: 20.0,
-                        semanticLabel:
-                            'Text to announce in accessibility modes',
-                      ),
-                      Icon(
-                        Icons.delete_outline,
-                        color: IconColor,
-                        size: 20.0,
-                        semanticLabel:
-                            'Text to announce in accessibility modes',
-                      )
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Share.share(
+                                'check out my website https://example.com');
+                          },
+                          iconSize: 20,
+                          icon: const Icon(
+                            Icons.mode_comment_outlined,
+                            color: IconColor,
+                            semanticLabel: 'add reply',
+                          )),
+                      IconButton(
+                          onPressed: () {
+                            Share.share(
+                                "https://twitter.com/${userProfile.id}/status/${tweet.id}");
+                          },
+                          iconSize: 20,
+                          icon: const Icon(
+                            Icons.share,
+                            color: IconColor,
+                            semanticLabel: 'share tweet',
+                          )),
+                      IconButton(
+                          onPressed: () {
+                            Share.share(
+                                'check out my website https://example.com');
+                          },
+                          iconSize: 20,
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: IconColor,
+                            semanticLabel: 'delete tweet',
+                          )),
                     ],
                   )
                 ],
