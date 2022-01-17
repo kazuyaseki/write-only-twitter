@@ -20,6 +20,34 @@ class TweetContent extends HookConsumerWidget {
   final TweetData tweet;
   final void Function(String tweetId) onDelete;
 
+  Future<void> _showConfiermDeleteDialog(
+      BuildContext context, VoidCallback onDelete) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Do you really delete this tweet?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('delete'),
+              onPressed: () {
+                onDelete();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
@@ -94,7 +122,9 @@ class TweetContent extends HookConsumerWidget {
                           )),
                       IconButton(
                           onPressed: () {
-                            onDelete(tweet.id!);
+                            _showConfiermDeleteDialog(context, () {
+                              onDelete(tweet.id!);
+                            });
                           },
                           iconSize: 20,
                           icon: const Icon(
