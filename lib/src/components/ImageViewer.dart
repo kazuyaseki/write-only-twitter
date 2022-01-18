@@ -1,42 +1,43 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:write_only_twitter/src/models/media_data.dart';
 
 const double DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER = 4 / 2.0;
 const double AXIS_SPACING = 2.0;
 
 class ImageViewer extends StatelessWidget {
-  const ImageViewer({required this.imageUrls, Key? key}) : super(key: key);
+  const ImageViewer({required this.images, Key? key}) : super(key: key);
 
-  final List<String> imageUrls;
+  final List<ImageData> images;
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrls.length == 4) {
-      return FourPhotos(context, imageUrls);
+    if (images.length == 4) {
+      return FourPhotos(context, images);
     }
-    if (imageUrls.length == 3) {
-      return ThreePhotos(context, imageUrls);
+    if (images.length == 3) {
+      return ThreePhotos(context, images);
     }
-    if (imageUrls.length == 2) {
-      return TwoPhotos(context, imageUrls);
+    if (images.length == 2) {
+      return TwoPhotos(context, images);
     }
-    if (imageUrls.length == 1) {
-      return SinglePhoto(imageUrls[0]);
+    if (images.length == 1) {
+      return SinglePhoto(images[0]);
     }
 
     return const SizedBox.shrink();
   }
 }
 
-Widget SinglePhoto(String imageUrl) {
+Widget SinglePhoto(ImageData image) {
   return ClipRRect(
-    child: Image.network(imageUrl),
+    child: Image.network(image.baseUrl),
     borderRadius: BorderRadius.circular(12),
   );
 }
 
-Widget TwoPhotos(BuildContext context, List<String> imageUrls) {
+Widget TwoPhotos(BuildContext context, List<ImageData> images) {
   return ClipRRect(
     child: AspectRatio(
       aspectRatio: DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER,
@@ -45,7 +46,7 @@ Widget TwoPhotos(BuildContext context, List<String> imageUrls) {
         children: <Widget>[
           Expanded(
             child: Image(
-              image: CachedNetworkImageProvider(imageUrls[0]),
+              image: CachedNetworkImageProvider(images[0].baseUrl),
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
             ),
@@ -53,7 +54,7 @@ Widget TwoPhotos(BuildContext context, List<String> imageUrls) {
           const Gap(AXIS_SPACING),
           Expanded(
             child: Image(
-              image: CachedNetworkImageProvider(imageUrls[1]),
+              image: CachedNetworkImageProvider(images[1].baseUrl),
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
             ),
@@ -65,7 +66,7 @@ Widget TwoPhotos(BuildContext context, List<String> imageUrls) {
   );
 }
 
-Widget ThreePhotos(BuildContext context, List<String> imageUrls) {
+Widget ThreePhotos(BuildContext context, List<ImageData> images) {
   return ClipRRect(
     child: AspectRatio(
       aspectRatio: DEFAULT_ASPECT_RATIO_MEDIA_CONTAINER,
@@ -74,7 +75,7 @@ Widget ThreePhotos(BuildContext context, List<String> imageUrls) {
         children: <Widget>[
           Expanded(
             child: Image(
-              image: CachedNetworkImageProvider(imageUrls[0]),
+              image: CachedNetworkImageProvider(images[0].baseUrl),
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.cover,
             ),
@@ -85,7 +86,7 @@ Widget ThreePhotos(BuildContext context, List<String> imageUrls) {
               children: <Widget>[
                 Expanded(
                   child: Image(
-                    image: CachedNetworkImageProvider(imageUrls[1]),
+                    image: CachedNetworkImageProvider(images[1].baseUrl),
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
@@ -93,7 +94,7 @@ Widget ThreePhotos(BuildContext context, List<String> imageUrls) {
                 const Gap(AXIS_SPACING),
                 Expanded(
                   child: Image(
-                    image: CachedNetworkImageProvider(imageUrls[2]),
+                    image: CachedNetworkImageProvider(images[2].baseUrl),
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
@@ -108,7 +109,7 @@ Widget ThreePhotos(BuildContext context, List<String> imageUrls) {
   );
 }
 
-Widget FourPhotos(BuildContext context, List<String> imageUrls) {
+Widget FourPhotos(BuildContext context, List<ImageData> images) {
   return ClipRRect(
     child: AspectRatio(
       child: GridView.builder(
@@ -122,7 +123,7 @@ Widget FourPhotos(BuildContext context, List<String> imageUrls) {
         ),
         itemBuilder: (BuildContext context, int index) {
           return Image(
-            image: CachedNetworkImageProvider(imageUrls[index]),
+            image: CachedNetworkImageProvider(images[index].baseUrl),
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
           );

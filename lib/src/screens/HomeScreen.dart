@@ -40,13 +40,9 @@ class HomeScreen extends HookConsumerWidget {
           imgUrl: tweet.user!.profileImageUrlHttps));
     }
 
-    ref.read(TweetsState.notifier).setNewTweets(ownTweets
-        .map((tweetData) => TweetData(
-            id: tweetData.idStr,
-            text: tweetData.fullText,
-            url: tweetData.source,
-            imgUrls: []))
-        .toList());
+    ref
+        .read(TweetsState.notifier)
+        .setNewTweets(ownTweets.map(constructTweetDateFromTweet).toList());
 
     onFinished();
   }

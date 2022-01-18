@@ -91,8 +91,8 @@ class TweetContent extends HookConsumerWidget {
                     style: body,
                   ),
                   const Gap(12),
-                  ImageViewer(imageUrls: tweet.imgUrls),
-                  tweet.imgUrls.isNotEmpty
+                  ImageViewer(images: tweet.imgs),
+                  tweet.imgs.isNotEmpty
                       ? const Gap(12)
                       : const SizedBox.shrink(),
                   Row(
