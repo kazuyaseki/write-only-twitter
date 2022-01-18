@@ -11,11 +11,13 @@ class ImagesCarousel extends HookConsumerWidget {
   const ImagesCarousel({
     required this.images,
     required this.onRemoveImage,
+    required this.onEditImage,
     Key? key,
   }) : super(key: key);
 
   final List<XFile> images;
   final void Function(int index) onRemoveImage;
+  final void Function(int index) onEditImage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,6 +41,13 @@ class ImagesCarousel extends HookConsumerWidget {
             top: 10.0,
             child: CloseButton(() {
               onRemoveImage(0);
+            }),
+          ),
+          Positioned(
+            right: 2.0,
+            bottom: 10.0,
+            child: CloseButton(() {
+              onEditImage(0);
             }),
           )
         ],
@@ -68,6 +77,13 @@ class ImagesCarousel extends HookConsumerWidget {
                   child: CloseButton(() {
                     onRemoveImage(0);
                   }),
+                ),
+                Positioned(
+                  right: 2.0,
+                  bottom: 10.0,
+                  child: CloseButton(() {
+                    onEditImage(0);
+                  }),
                 )
               ]);
             },
@@ -94,5 +110,26 @@ Widget CloseButton(void Function() onRemoveImage) {
       ),
     ),
     onPressed: onRemoveImage,
+  );
+}
+
+Widget EditButton(void Function() onEditImage) {
+  return ElevatedButton(
+    child: const Icon(
+      Icons.brush_outlined,
+      color: Colors.white,
+      semanticLabel: 'remove image',
+    ),
+    style: ElevatedButton.styleFrom(
+      primary: const Color(0x88000000),
+      shape: const CircleBorder(
+        side: BorderSide(
+          color: Color(0x88000000),
+          width: 1,
+          style: BorderStyle.solid,
+        ),
+      ),
+    ),
+    onPressed: onEditImage,
   );
 }
