@@ -46,17 +46,17 @@ class CreateTweetModal extends HookConsumerWidget {
     final tweetText = useState("");
     final imageFiles = useState<List<XFile>>([]);
 
-    useEffect(() {
-      loadBundles() async {
-        final File f = await getImageFileFromAssets('test.png');
-        final File f2 = await getImageFileFromAssets('test2.png');
-        // final File f3 = await getImageFileFromAssets('test3.png');
-        // imageFiles.value = [XFile(f2.path), XFile(f.path), XFile(f3.path)];
-        imageFiles.value = [XFile(f2.path), XFile(f.path)];
-      }
+    // useEffect(() {
+    //   loadBundles() async {
+    //     final File f = await getImageFileFromAssets('test.png');
+    //     final File f2 = await getImageFileFromAssets('test2.png');
+    //     // final File f3 = await getImageFileFromAssets('test3.png');
+    //     // imageFiles.value = [XFile(f2.path), XFile(f.path), XFile(f3.path)];
+    //     imageFiles.value = [XFile(f2.path), XFile(f.path)];
+    //   }
 
-      loadBundles();
-    }, []);
+    //   loadBundles();
+    // }, []);
 
     Future getImage(context) async {
       try {
@@ -222,25 +222,28 @@ class CreateTweetModal extends HookConsumerWidget {
                 const SafeArea(
                   child: SizedBox.shrink(),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        iconSize: 40,
-                        icon: const Icon(
-                          Icons.chevron_left,
-                          color: IconColor,
-                          semanticLabel: 'cancel tweeting',
-                        )),
-                    Button(
-                        onPressed: () {
-                          sendTweet();
-                        },
-                        text: "ツイートする")
-                  ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          iconSize: 40,
+                          icon: const Icon(
+                            Icons.chevron_left,
+                            color: IconColor,
+                            semanticLabel: 'cancel tweeting',
+                          )),
+                      Button(
+                          onPressed: () {
+                            sendTweet();
+                          },
+                          text: "ツイートする")
+                    ],
+                  ),
                 ),
                 Padding(
                     padding: const EdgeInsets.all(20.0),
